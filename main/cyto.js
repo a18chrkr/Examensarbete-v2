@@ -22,6 +22,10 @@ const mergeJSONDatasets = async function(datasets){
     return mergedDatasets;
 }
 
+mergeJSONDatasets(datasets).then(datasets => {
+    const elements = convertToCytoscape(datasets)
+})
+
 var cy = cytoscape({
 
     container: document.getElementById('cy'), // container to render in
