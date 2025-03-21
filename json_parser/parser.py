@@ -1,3 +1,7 @@
+# This script was created in PyCharm together with the pandas package
+# If you want to install pandas on your computer seperately, you can
+# do it here: https://pandas.pydata.org/
+
 import pandas as pd
 
 # Byt ut filvägen till den fil du önskar parsa
