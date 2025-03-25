@@ -22,6 +22,40 @@ const mergeJSONDatasets = async function(datasets){
     return mergedDatasets;
 }
 
+const convertToCytoscape = function(biogridData){
+    const nodes = new Map(); // En map säkerställer att endast unika noder renderas
+    const edges = [];
+    const expSys = new Map(); // Alla experimental systems
+
+    biogridData.forEach(interaction => {
+        const interactorA = interaction["Official Symbol Interactor A"];
+        const interactorB = interaction["Official Symbol Interactor B"];
+        const throughput = interaction["Throughput"];
+        const experimentalSystem = interaction["Experimental System"];
+
+        // Lägger till noder som inte redan existerar
+        if (!nodes.has(interactorA)) nodes.set(interactorA, { data: { id: interactorA, name: interactorA, throughput, experimentalSystem } });
+        if (!nodes.has(interactorB)) nodes.set(interactorB, { data: { id: interactorB, name: interactorB, throughput, experimentalSystem } });
+
+        if(!expSys.has(experimentalSystem)) expSys.set(experimentalSystem, experimentalSystem)
+
+        // Lägger till en edge (relation mellan två noder)
+        edges.push({
+            data: {
+                source: interactorA,
+                target: interactorB,
+                experimentalSystem
+                // interaction: interaction["Experimental System"],
+                // type: interaction["Experimental System Type"]
+            }
+        });
+    });
+
+    console.log(`Noder ${nodes.size}, Edges ${edges.length}}`)
+    console.log(expSys)
+    return [...nodes.values(), ...edges]; // Separerar och kombinerar node map och edge array till en enhetlig array
+}
+
 mergeJSONDatasets(datasets).then(datasets => {
     const elements = convertToCytoscape(datasets)
 })
