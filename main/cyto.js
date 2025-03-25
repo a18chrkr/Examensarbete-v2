@@ -2,6 +2,12 @@ import cytoscape from "../node_modules/cytoscape/dist/cytoscape.esm.min.mjs";
 
 'use strict';
 
+/*
+    This script use Cytoscape.js to parse, concat
+    and render TAB3 formatted datasets from BioGRID.
+    TAB3 documentation can be found here: https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0
+*/
+
 // Include file paths to desired datasets
 const datasets = ['../json_parser/tp73.json', '../json_parser/abl1.json'];
 
@@ -23,7 +29,7 @@ const mergeJSONDatasets = async function (datasets) {
 }
 
 const convertToCytoscape = function (biogridData) {
-    const nodes = new Map(); // En map säkerställer att endast unika noder renderas
+    const nodes = new Map(); // A map ensure only unique values
     const edges = [];
 
     biogridData.forEach(interaction => {
@@ -31,11 +37,11 @@ const convertToCytoscape = function (biogridData) {
         const interactorB = interaction["Official Symbol Interactor B"];
         const throughput = interaction["Throughput"];
 
-        // Lägger till noder som inte redan existerar
+        // Add nodes that do no exists already
         if (!nodes.has(interactorA)) nodes.set(interactorA, { data: { id: interactorA, name: interactorA, throughput } });
         if (!nodes.has(interactorB)) nodes.set(interactorB, { data: { id: interactorB, name: interactorB, throughput } });
 
-        // Lägger till en edge (relation mellan två noder)
+        // Add edges (relation between nodes)
         edges.push({
             data: {
                 source: interactorA,
@@ -44,28 +50,28 @@ const convertToCytoscape = function (biogridData) {
         });
     });
 
-    console.log(`Noder ${nodes.size}, Edges ${edges.length}}`) // Loggar totalt antal noder och länkar/edges
-    return [...nodes.values(), ...edges]; // Separerar och kombinerar node map och edge array till en enhetlig array
+    console.log(`Noder ${nodes.size}, Edges ${edges.length}}`) // Logs total amount of nodes and edges
+    return [...nodes.values(), ...edges]; // ... spread operator make elements in the map & array individual elements
 }
 
 const renderCytoscape = function (elements) {
     cytoscape({
-        container: document.getElementById("cy"), // Pekar på DOM elementet där renderingen sker
+        container: document.getElementById("cy"), // DOM element to render Cytoscape
         elements: elements,
         style: [
             {
-                selector: "node", // Standard färg på en nod
+                selector: "node", // Default node
                 style: {
                     "label": "data(name)",
-                    "background-color": "#0074D9", // Blå
+                    "background-color": "#0074D9", // Blue
                     "height": "30px",
                     "width": "30px",
                 }
             },
             {
-                selector: "node[throughput = 'High Throughput']", // Ändrar färgen till röd vid hög throughput
+                selector: "node[throughput = 'High Throughput']", // High throughput node
                 style: {
-                    "background-color": "#ff6666", // Röd
+                    "background-color": "#ff6666", // Red
                 }
             },
             {
