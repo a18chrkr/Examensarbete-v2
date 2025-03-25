@@ -56,10 +56,6 @@ const convertToCytoscape = function (biogridData) {
     return [...nodes.values(), ...edges]; // Separerar och kombinerar node map och edge array till en enhetlig array
 }
 
-mergeJSONDatasets(datasets).then(datasets => {
-    const elements = convertToCytoscape(datasets)
-})
-
 const renderCytoscape = function (elements) {
     cytoscape({
         container: document.getElementById("cy"), // Pekar på DOM elementet där renderingen sker
@@ -94,3 +90,8 @@ const renderCytoscape = function (elements) {
         }
     });
 }
+
+mergeJSONDatasets(datasets).then(datasets => {
+    const elements = convertToCytoscape(datasets)
+    renderCytoscape(elements);
+})
