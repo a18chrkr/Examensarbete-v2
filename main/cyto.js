@@ -1,4 +1,5 @@
 import cytoscape from "../node_modules/cytoscape/dist/cytoscape.esm.min.mjs";
+import { startPerformanceObserver } from "./performance.js";
 
 'use strict';
 
@@ -93,3 +94,5 @@ mergeJSONDatasets(datasets).then(datasets => {
     const elements = convertToCytoscape(datasets)
     renderCytoscape(elements);
 })
+
+startPerformanceObserver();
