@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "cytoscape": "^3.31.1"
+    "cytoscape": "^3.31.1",
+    "graphology": "^0.26.0",
+    "sigma": "^3.0.1"
   }
 }
