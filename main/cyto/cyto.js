@@ -1,5 +1,5 @@
-import cytoscape from "../node_modules/cytoscape/dist/cytoscape.esm.min.mjs";
-import { startPerformanceObserver } from "./performance.js";
+import cytoscape from "../../node_modules/cytoscape/dist/cytoscape.esm.min.mjs";
+import { startPerformanceObserver } from "../performance.js";
 
 'use strict';
 
@@ -10,7 +10,7 @@ import { startPerformanceObserver } from "./performance.js";
 */
 
 // Include file paths to desired datasets
-const datasets = ['../json_parser/tp73.json', '../json_parser/abl1.json'];
+const datasets = ['../../json_parser/tp73.json', '../../json_parser/abl1.json'];
 
 // Use the array of datasets and merge them into one
 const mergeJSONDatasets = async function (datasets) {
