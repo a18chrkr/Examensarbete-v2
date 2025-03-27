@@ -1,7 +1,6 @@
 import cytoscape from "../../node_modules/cytoscape/dist/cytoscape.esm.min.mjs";
 import { startPerformanceObserver } from "../performance.js";
-
-'use strict';
+import { mergeJSONDatasets } from "../jsonMerge.js";
 
 /*
     This script use Cytoscape.js to parse, concat
@@ -9,25 +8,13 @@ import { startPerformanceObserver } from "../performance.js";
     TAB3 documentation can be found here: https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0
 */
 
+'use strict';
+
 // Include file paths to desired datasets
 const datasets = ['../../json_parser/tp73.json', '../../json_parser/abl1.json'];
 
-// Use the array of datasets and merge them into one
-const mergeJSONDatasets = async function (datasets) {
-    let mergedDatasets = [];
-
-    for (let dataset of datasets) {
-        try {
-            const response = await fetch(dataset);
-            const data = await response.json();
-            mergedDatasets = mergedDatasets.concat(data)
-        }
-        catch (error) {
-            console.log(`There was an error fetching ${dataset}: `, error);
-        }
-    }
-    return mergedDatasets;
-}
+startPerformanceObserver();
+mergeJSONDatasets(datasets);
 
 const convertToCytoscape = function (biogridData) {
     const nodes = new Map(); // A map ensure only unique values
@@ -94,5 +81,3 @@ mergeJSONDatasets(datasets).then(datasets => {
     const elements = convertToCytoscape(datasets)
     renderCytoscape(elements);
 })
-
-startPerformanceObserver();
