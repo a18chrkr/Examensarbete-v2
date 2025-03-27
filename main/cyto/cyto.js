@@ -37,7 +37,7 @@ const convertToCytoscape = function (biogridData) {
         });
     });
 
-    console.log(`Noder ${nodes.size}, Edges ${edges.length}}`) // Logs total amount of nodes and edges
+    console.log(`Noder ${nodes.size}, Edges ${edges.length}`) // Logs total amount of nodes and edges
     return [...nodes.values(), ...edges]; // ... spread operator make elements in the map & array individual elements
 }
 
