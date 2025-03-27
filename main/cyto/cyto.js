@@ -14,7 +14,6 @@ import { mergeJSONDatasets } from "../jsonMerge.js";
 const datasets = ['../../json_parser/tp73.json', '../../json_parser/abl1.json'];
 
 startPerformanceObserver();
-mergeJSONDatasets(datasets);
 
 const convertToCytoscape = function (biogridData) {
     const nodes = new Map(); // A map ensure only unique values
