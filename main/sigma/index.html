@@ -6,10 +6,26 @@
         <title>Sigma Renderer</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/2.4.0/sigma.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/graphology/0.25.4/graphology.umd.min.js"></script>
+        <script src="../performance.js"></script>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        
-        <script src="sigma.js" async defer></script>
+        <div id="sigma"></div> <!-- This is where Sigma is rendered -->
+        <script type="module">
+            import { startPerformanceObserver } from "../performance.js"
+
+            startPerformanceObserver();
+
+            // Create a graphology graph
+            const graph = new graphology.Graph();
+            graph.addNode("1", { label: "Node 1", x: 0, y: 0, size: 10, color: "blue" });
+            graph.addNode("2", { label: "Node 2", x: 1, y: 1, size: 20, color: "red" });
+            graph.addEdge("1", "2", { size: 5, color: "purple" });
+
+            // Instantiate sigma.js and render the graph
+            const sigmaInstance = new Sigma(graph, document.getElementById("sigma"));
+        </script>
     </body>
 </html>
