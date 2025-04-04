@@ -3,12 +3,10 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
 
     window.addEventListener('load', () => {
 
-        // Ensure measurements is always initialized correctly
-        let measurements = JSON.parse(localStorage.getItem('measurements') || "[]");
-
-        const measurement = {};
-
         setTimeout(() => {
+            // Ensure measurements is always initialized correctly
+            let measurements = JSON.parse(localStorage.getItem('measurements') || "[]");
+            const measurement = {};
             const perf = performance.getEntriesByType('navigation')[0]?.toJSON();
             const resources = performance.getEntriesByType("resource");
 
@@ -41,18 +39,18 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
 
             // collect earliest startTime of CDN
             if (cdnResources[0].startTime < cdnResources[1].startTime) {
-                measurement['earliestResourceStartTime'] = cdnResources[0].startTime;
+                measurement['earliestResourceStartTime'] = (cdnResources[0].startTime).toFixed(2);
             }
             else {
-                measurement['earliestResourceStartTime'] = cdnResources[1].startTime;
+                measurement['earliestResourceStartTime'] = (cdnResources[1].startTime).toFixed(2);
             }
 
             // collect latest responseEnd
             if (cdnResources[0].responseEnd > cdnResources[1].responseEnd) {
-                measurement['latestResourceResponseEnd'] = cdnResources[0].responseEnd;
+                measurement['latestResourceResponseEnd'] = (cdnResources[0].responseEnd).toFixed(2);
             }
             else {
-                measurement['latestResourceRespondEnd'] = cdnResources[1].responseEnd;
+                measurement['latestResourceResponseEnd'] = (cdnResources[1].responseEnd).toFixed(2);
             }
 
             measurements.push(measurement);
@@ -75,7 +73,7 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
                 measurements = measurements.map(measurements => Object.values(measurements))
 
                 // Adds a row with headers for csv file
-                measurements.unshift(['loadTime', 'totalLoadTime', 'domContentLoadTime', 'cdnResource', 'earliestResourceStartTime', 'latestResourceResponseEnd'])
+                measurements.unshift(['loadTime', 'totalLoadTime', 'domContentLoadTime', 'sigmaLoadTime', 'graphologyLoadTime', 'earliestResourceStartTime', 'latestResourceResponseEnd'])
 
                 // CSV content
                 const csvMeasurements = "data:text/csv;charset=utf-8," + measurements.map(row => row.join(',')).join('\n');
