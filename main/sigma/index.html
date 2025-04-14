@@ -13,9 +13,9 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div id="container" style="width: 800px; height: 600px; background: white; border: 1px solid black"></div> <!-- This is where Sigma is rendered -->
+        <div id="sigma"></div> <!-- This is where Sigma is rendered -->
         <script type="module">
-            
+
         import { startPerformanceObserver } from "../performance.js"
         import { mergeJSONDatasets } from "../jsonMerge.js"
         import graphologyLayout from 'https://cdn.jsdelivr.net/npm/graphology-layout@0.6.1/+esm';
@@ -35,7 +35,7 @@
         graphologyLayout.circular.assign(graph)
 
         // Instantiates sigma and render the graph
-        const sigmaInstance = new Sigma(graph, document.getElementById("container"));
+        const sigmaInstance = new Sigma(graph, document.getElementById("sigma"));
 
         </script>
     </body>
