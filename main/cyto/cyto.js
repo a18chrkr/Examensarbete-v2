@@ -70,7 +70,7 @@ const renderCytoscape = function (elements) {
             },
         ],
         layout: {
-            name: "concentric",
+            name: "circle",
             animate: false,
         }
     });

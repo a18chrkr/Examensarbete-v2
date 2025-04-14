@@ -20,22 +20,45 @@
         import { mergeJSONDatasets } from "../jsonMerge.js"
         import graphologyLayout from 'https://cdn.jsdelivr.net/npm/graphology-layout@0.6.1/+esm';
         
+        const datasets = ['../../json_parser/tp73.json', '../../json_parser/abl1.json'];
+
+        startPerformanceObserver();
+
         // Create a graphology graph
         const graph = new graphology.Graph();
 
-        graph.addNode("1", { label: "Node 1", size: 20, color: "blue" });
-        graph.addNode("2", { label: "Node 2", size: 20, color: "red" });
-        graph.addNode("3", { label: "Node 3", size: 20, color: "yellow" });
-        graph.addNode("4", { label: "Node 4", size: 20, color: "green" });
-        graph.addEdge("1", "2", { size: 5, color: "purple" });
-        graph.addEdge("2", "3", { size: 5, color: "purple" });
-        graph.addEdge("3", "4", { size: 5, color: "purple" });
+        const convertToSigma = function (biogridData) {
 
-        // Assigns the circular layout
-        graphologyLayout.circular.assign(graph)
+            biogridData.forEach(interaction => {
+                const interactorA = interaction["Official Symbol Interactor A"];
+                const interactorB = interaction["Official Symbol Interactor B"];
 
-        // Instantiates sigma and render the graph
-        const sigmaInstance = new Sigma(graph, document.getElementById("sigma"));
+                // Add node if not already existing in graph
+                if(!graph.hasNode(interactorA)){
+                    graph.addNode(interactorA, {label: interactorA, size: 5})
+                }
+                if(!graph.hasNode(interactorB)){
+                    graph.addNode(interactorB, {label: interactorB, size: 5})
+                }
+
+                // Add edge if not already existing
+                const edgeID = `${interactorA}, ${interactorB}`;
+                if(!graph.hasEdge(edgeID) && interactorA !== interactorB){
+                    graph.addEdgeWithKey(edgeID, interactorA, interactorB);
+                }
+            })
+        }
+        
+        mergeJSONDatasets(datasets).then(datasets => {
+            const biogridData = datasets;
+            convertToSigma(biogridData)
+
+            // Assigns the circular layout
+            graphologyLayout.circular.assign(graph)
+
+            // Instantiates sigma and render the graph
+            const sigmaInstance = new Sigma(graph, document.getElementById("sigma"));
+        })
 
         </script>
     </body>
