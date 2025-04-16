@@ -1,4 +1,3 @@
-
 export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
 
     window.addEventListener('load', () => {
@@ -24,16 +23,6 @@ export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
                 cdnDomains.some(domain => resource.name.includes(domain))
             );
 
-            console.table(cdnResources.map(r => ({
-                name: r.name,
-                startTime: r.startTime.toFixed(2),
-                responseEnd: r.responseEnd.toFixed(2),
-                duration: r.duration.toFixed(2)
-            })));
-
-            measurement['earliestResourceStartTime'] = "";
-            measurement['latestResourceResponseEnd'] = "";
-
             // Set each resource name as key and load time as value
             cdnResources.forEach((resource) => {
                 const url = new URL(resource.name);
@@ -44,19 +33,29 @@ export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
             // Only saves resources if it has a fetch time
             const fullyLoadedCDNs = cdnResources.filter(r => r.responseEnd > 0);
 
-            if (fullyLoadedCDNs.length >= 1) {
-                const earliestStart = Math.min(...fullyLoadedCDNs.map(resource => resource.startTime));
-                const latestEnd = Math.max(...fullyLoadedCDNs.map(resource => resource.responseEnd));
-                const cdnLoadTime = (latestEnd - earliestStart).toFixed(2);
+            // Returns sum of fetch time for all CDN's in milliseconds, taking into account parallel overlaps
+            function calculateActiveCDNTime(fullyLoadedCDNs) {
 
-                measurement['earliestResourceStartTime'] = earliestStart.toFixed(2);
-                measurement['latestResourceResponseEnd'] = latestEnd.toFixed(2);
-                measurement['cdnLoadTime'] = cdnLoadTime;
-
-                measurement['totalLoadTimeWithoutCDN'] = (
-                    parseFloat(measurement['totalLoadTime']) - parseFloat(cdnLoadTime)
-                ).toFixed(2);
+                // Turn each resource into a [startTime, responseEnd] pair
+                const intervals = fullyLoadedCDNs.map(r => [r.startTime, r.responseEnd]).sort((a, b) => a[0] - b[0]);
+                
+                // Merge CDN load intervals toegether into blocks
+                const merged = [];
+                for (const [start, end] of intervals) {
+                    if (!merged.length || merged[merged.length - 1][1] < start) {
+                    merged.push([start, end]); // no overlap
+                    } else {
+                    merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], end); // merge
+                    }
+                }
+                
+                const totalActive = merged.reduce((sum, [start, end]) => sum + (end - start), 0).toFixed(2);
+                return totalActive;
             }
+
+            const cdnLoadTimes = calculateActiveCDNTime(fullyLoadedCDNs);
+            measurement['cdnLoadTime'] = cdnLoadTimes;
+            measurement['totalLoadTimeWithoutCDN'] = (parseFloat(measurement['totalLoadTime']) - cdnLoadTimes).toFixed(2);
             
             measurements.push(measurement);
             localStorage.setItem('measurements', JSON.stringify(measurements));
@@ -85,7 +84,7 @@ export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
 
                 // Create CSV rows (make sure every row has all keys)
                 const csvRows = measurements.map(row => {
-                return headers.map(key => row.hasOwnProperty(key) ? row[key] : "");
+                    return headers.map(key => row.hasOwnProperty(key) ? row[key] : "");
                 });
 
                 // Add headers at the top
