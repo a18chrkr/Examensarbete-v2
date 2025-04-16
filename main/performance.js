@@ -44,8 +44,6 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
                 }
             })
 
-            // console.log(cdnResources)
-
             if(cdnResources.length >= 1){
                 const startTimes = cdnResources.map(r => r.startTime);
                 const responseEnds = cdnResources.map(r => r.responseEnd);
