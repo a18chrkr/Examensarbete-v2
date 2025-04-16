@@ -54,22 +54,6 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
                 measurement['latestResourceResponseEnd'] = Math.max(...responseEnds).toFixed(2);
             }
 
-            // // collect earliest startTime of CDN
-            // if (cdnResources[0].startTime < cdnResources[1].startTime) {
-            //     measurement['earliestResourceStartTime'] = (cdnResources[0].startTime).toFixed(2);
-            // }
-            // else {
-            //     measurement['earliestResourceStartTime'] = (cdnResources[1].startTime).toFixed(2);
-            // }
-
-            // // collect latest responseEnd
-            // if (cdnResources[0].responseEnd > cdnResources[1].responseEnd) {
-            //     measurement['latestResourceResponseEnd'] = (cdnResources[0].responseEnd).toFixed(2);
-            // }
-            // else {
-            //     measurement['latestResourceResponseEnd'] = (cdnResources[1].responseEnd).toFixed(2);
-            // }
-
             measurements.push(measurement);
             localStorage.setItem('measurements', JSON.stringify(measurements));
 
