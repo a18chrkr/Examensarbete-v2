@@ -1,5 +1,5 @@
 
-export const startPerformanceObserver = function (reloads = 10, delay = 500) {
+export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
 
     window.addEventListener('load', () => {
 
@@ -9,6 +9,7 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
             const measurement = {};
             const perf = performance.getEntriesByType('navigation')[0]?.toJSON();
             const resources = performance.getEntriesByType("resource");
+            const cdnDomains = ['cloudflare', 'jsdelivr'];
 
             if (!perf) {
                 console.log('There was an error measuring performance.');
@@ -16,42 +17,47 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
             }
 
             // Get data from navigation api
-            measurement['loadTime'] = (perf.loadEventEnd - perf.loadEventStart).toFixed(2);
             measurement['totalLoadTime'] = (perf.loadEventEnd - perf.startTime).toFixed(2);
-            measurement['domContentLoadedTime'] = (perf.domContentLoadedEventEnd - perf.domContentLoadedEventStart).toFixed(2);
 
             // Only saves cdn's'
             const cdnResources = resources.filter(resource =>
-                resource.name.includes('cdn') && resource.name.includes('cloudflare')
+                cdnDomains.some(domain => resource.name.includes(domain))
             );
 
-            // Defaulting CDN values
-            measurement['sigmaLoadTime'] = "";
-            measurement['graphologyLoadTime'] = "";
+            console.table(cdnResources.map(r => ({
+                name: r.name,
+                startTime: r.startTime.toFixed(2),
+                responseEnd: r.responseEnd.toFixed(2),
+                duration: r.duration.toFixed(2)
+            })));
+
             measurement['earliestResourceStartTime'] = "";
             measurement['latestResourceResponseEnd'] = "";
 
-            // Set each resource as key and load time as value
-            cdnResources.forEach(resource => {
-                let resourceName;
-                if (resource.name.includes('/sigma.min.js'))
-                    resourceName = 'sigmaLoadTime'
-                else if (resource.name.includes('/graphology.umd.min.js' || 'graphology-layout')) {
-                    resourceName = 'graphologyLoadTime'
-                }
-                if(resourceName){
-                    measurement[resourceName] = (resource.duration).toFixed(2);
-                }
+            // Set each resource name as key and load time as value
+            cdnResources.forEach((resource) => {
+                const url = new URL(resource.name);
+                const path = url.pathname
+                measurement[path] = (resource.duration).toFixed(2);
             })
 
-            if(cdnResources.length >= 1){
-                const startTimes = cdnResources.map(r => r.startTime);
-                const responseEnds = cdnResources.map(r => r.responseEnd);
+            // Only saves resources if it has a fetch time
+            const fullyLoadedCDNs = cdnResources.filter(r => r.responseEnd > 0);
 
-                measurement['earliestResourceStartTime'] = Math.min(...startTimes).toFixed(2);
-                measurement['latestResourceResponseEnd'] = Math.max(...responseEnds).toFixed(2);
+            if (fullyLoadedCDNs.length >= 1) {
+                const earliestStart = Math.min(...fullyLoadedCDNs.map(resource => resource.startTime));
+                const latestEnd = Math.max(...fullyLoadedCDNs.map(resource => resource.responseEnd));
+                const cdnLoadTime = (latestEnd - earliestStart).toFixed(2);
+
+                measurement['earliestResourceStartTime'] = earliestStart.toFixed(2);
+                measurement['latestResourceResponseEnd'] = latestEnd.toFixed(2);
+                measurement['cdnLoadTime'] = cdnLoadTime;
+
+                measurement['totalLoadTimeWithoutCDN'] = (
+                    parseFloat(measurement['totalLoadTime']) - parseFloat(cdnLoadTime)
+                ).toFixed(2);
             }
-
+            
             measurements.push(measurement);
             localStorage.setItem('measurements', JSON.stringify(measurements));
 
@@ -68,31 +74,33 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
                 // have to re-parse data from local storage to account for last gathered measurement
                 measurements = JSON.parse(localStorage.getItem('measurements'));
 
-                // Makes 'measurements' an array of arrays, ready for csv download
-                measurements = measurements.map(measurements => Object.values(measurements))
+                // Dynamically collect all unique keys from all measurements
+                const allKeys = new Set();
+                measurements.forEach(row => {
+                Object.keys(row).forEach(key => allKeys.add(key));
+                });
 
-                // Adds a row with headers for csv file
-                measurements.unshift([
-                    'loadTime',
-                    'totalLoadTime',
-                    'domContentLoadTime',
-                    'sigmaLoadTime',
-                    'graphologyLoadTime',
-                    'earliestResourceStartTime',
-                    'latestResourceResponseEnd',
-                    'totalLoadTimeWihoutCDN'
-                ])
+                // Convert to array (optional: sort for consistency)
+                const headers = Array.from(allKeys);
 
-                // CSV content
-                const csvMeasurements = "data:text/csv;charset=utf-8," + measurements.map(row => row.join(',')).join('\n');
+                // Create CSV rows (make sure every row has all keys)
+                const csvRows = measurements.map(row => {
+                return headers.map(key => row.hasOwnProperty(key) ? row[key] : "");
+                });
+
+                // Add headers at the top
+                csvRows.unshift(headers);
+
+                // Generate CSV string
+                const csvMeasurements = "data:text/csv;charset=utf-8," + csvRows.map(row => row.join(',')).join('\n');
                 const encodedMeasurements = encodeURI(csvMeasurements);
 
-                // Creates a clickable link which allow nameing the download file
+                // Download CSV
                 const link = document.createElement("a");
                 link.setAttribute("href", encodedMeasurements);
-                link.setAttribute("download", "measurements.csv"); // Name of csv file
+                link.setAttribute("download", "measurements.csv");
                 document.body.appendChild(link);
-                link.click(); // Auto clicks the link to download the csv
+                link.click();
                 document.body.removeChild(link);
 
                 localStorage.removeItem('reloadCount'); // Reset iteration counter
