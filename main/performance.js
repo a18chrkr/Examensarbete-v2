@@ -34,9 +34,9 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
             // Set each resource as key and load time as value
             cdnResources.forEach(resource => {
                 let resourceName;
-                if (resource.name === 'https://cdnjs.cloudflare.com/ajax/libs/sigma.js/3.0.1/sigma.min.js')
+                if (resource.name.includes('/sigma.min.js'))
                     resourceName = 'sigmaLoadTime'
-                else if (resource.name === 'https://cdnjs.cloudflare.com/ajax/libs/graphology/0.26.0/graphology.umd.min.js') {
+                else if (resource.name.includes('/graphology.umd.min.js' || 'graphology-layout')) {
                     resourceName = 'graphologyLoadTime'
                 }
                 if(resourceName){
@@ -79,7 +79,8 @@ export const startPerformanceObserver = function (reloads = 10, delay = 500) {
                     'sigmaLoadTime',
                     'graphologyLoadTime',
                     'earliestResourceStartTime',
-                    'latestResourceResponseEnd'
+                    'latestResourceResponseEnd',
+                    'totalLoadTimeWihoutCDN'
                 ])
 
                 // CSV content
