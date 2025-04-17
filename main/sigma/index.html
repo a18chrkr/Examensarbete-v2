@@ -9,11 +9,17 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/3.0.1/sigma.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/graphology/0.26.0/graphology.umd.min.js"></script>
         <!-- <script src="../performance.js"></script> -->
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="../../main/style.css">
     </head>
     <body>
-        <div id="sigma"></div> <!-- This is where Sigma is rendered -->
+        <div id="graph"></div> <!-- This is where Sigma is rendered -->
         <script type="module">
+       
+        /*
+            This script use Sigma.js to parse, concat
+            and render TAB3 formatted datasets from BioGRID.
+            TAB3 documentation can be found here: https://wiki.thebiogrid.org/doku.php/biogrid_tab_version_3.0
+        */
 
         import { startPerformanceObserver } from "../performance.js"
         import { mergeJSONDatasets } from "../jsonMerge.js"
@@ -26,7 +32,7 @@
         // Create a graphology graph
         const graph = new graphology.Graph();
 
-        const convertToSigma = function (biogridData) {
+        const convertBiogridData = function (biogridData) {
 
             biogridData.forEach(interaction => {
                 const interactorA = interaction["Official Symbol Interactor A"];
@@ -41,22 +47,25 @@
                 }
 
                 // Add edge if not already existing
-                const edgeID = `${interactorA}, ${interactorB}`;
+                const edgeID = `${interactorA}-${interactorB}`;
                 if(!graph.hasEdge(edgeID) && interactorA !== interactorB){
                     graph.addEdgeWithKey(edgeID, interactorA, interactorB);
                 }
             })
         }
+
+        
         
         mergeJSONDatasets(datasets).then(datasets => {
             const biogridData = datasets;
-            convertToSigma(biogridData)
+            convertBiogridData(biogridData)
+            console.log(`Nodes: ${graph.order}, Edges: ${graph.size}`);
 
             // Assigns the circular layout
             graphologyLayout.circular.assign(graph)
 
             // Instantiates sigma and render the graph
-            const sigmaInstance = new Sigma(graph, document.getElementById("sigma"));
+            const sigmaInstance = new Sigma(graph, document.getElementById("graph"));
         })
 
         </script>
