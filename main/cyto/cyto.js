@@ -47,7 +47,6 @@ const convertBiogridData = function (biogridData) {
     });
 };
 
-
 mergeJSONDatasets(datasets).then(datasets => {
     const biogridData = datasets;
     convertBiogridData(biogridData)
