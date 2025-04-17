@@ -51,7 +51,7 @@ const convertBiogridData = function (biogridData) {
 mergeJSONDatasets(datasets).then(datasets => {
     const biogridData = datasets;
     convertBiogridData(biogridData)
-    console.log(`Cytoscape.js → Nodes: ${graph.nodes().length}, Edges: ${graph.edges().length}`);
+    console.log(`Nodes: ${graph.nodes().length}, Edges: ${graph.edges().length}`);
 
 
     graph.mount(document.getElementById('graph')); // this attaches it to the DOM
