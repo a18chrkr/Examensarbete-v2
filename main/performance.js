@@ -33,7 +33,7 @@ export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
             // Only saves resources if it has a fetch time
             const fullyLoadedCDNs = cdnResources.filter(r => r.responseEnd > 0);
 
-            // Returns sum of fetch time for all CDN's in milliseconds, taking into account parallel overlaps
+            // Returns sum of fetch time for all CDN's in milliseconds, taking into account parallels & overlaps
             function calculateActiveCDNTime(fullyLoadedCDNs) {
 
                 // Turn each resource into a [startTime, responseEnd] pair
@@ -43,9 +43,9 @@ export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
                 const merged = [];
                 for (const [start, end] of intervals) {
                     if (!merged.length || merged[merged.length - 1][1] < start) {
-                    merged.push([start, end]); // no overlap
+                        merged.push([start, end]); // no overlap
                     } else {
-                    merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], end); // merge
+                        merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], end); // merge
                     }
                 }
                 
