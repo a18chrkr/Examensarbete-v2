@@ -1,4 +1,4 @@
-export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
+export const startPerformanceObserver = function (reloads = 210, delay = 1000) {
 
     window.addEventListener('load', () => {
 
@@ -91,7 +91,7 @@ export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
                 csvRows.unshift(headers);
 
                 // Generate CSV string
-                const csvMeasurements = "data:text/csv;charset=utf-8," + csvRows.map(row => row.join(',')).join('\n');
+                const csvMeasurements = "data:text/csv;charset=utf-8," + csvRows.map(row => row.join(';')).join('\n');
                 const encodedMeasurements = encodeURI(csvMeasurements);
 
                 // Download CSV
