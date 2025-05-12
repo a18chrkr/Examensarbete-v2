@@ -11,7 +11,7 @@ import { mergeJSONDatasets } from "../jsonMerge.js";
 'use strict';
 
 // Include file paths to desired datasets
-const datasets = ['../../json_parser/tp73.json', '../../json_parser/abl1.json'];
+const datasets = ['../../json_parser/wwp1.json', '../../json_parser/anapc2.json'];
 
 startPerformanceObserver();
 
