@@ -1,4 +1,4 @@
-export const startPerformanceObserver = function (reloads = 10, delay = 1000) {
+export const startPerformanceObserver = function (reloads = 2000, delay = 1000) {
 
     window.addEventListener('load', () => {
 
