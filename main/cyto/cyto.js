@@ -11,7 +11,17 @@ import { mergeJSONDatasets } from "../jsonMerge.js";
 'use strict';
 
 // Include file paths to desired datasets
-const datasets = ['../../json_parser/prkabc.json', '../../json_parser/akap1.json', '../../json_parser/fkbp4.json', '../../json_parser/dnaja2.json'];
+const datasets = [
+    '../../json_parser/dataset_large/ARF4.json',
+    '../../json_parser/dataset_large/CASP8.json',
+    '../../json_parser/dataset_large/CCDC22.json',
+    '../../json_parser/dataset_large/CKAP4.json',
+    '../../json_parser/dataset_large/KBTBD4.json',
+    '../../json_parser/dataset_large/KEAP1.json',
+    '../../json_parser/dataset_large/SPOP.json',
+    '../../json_parser/dataset_large/CD247.json',
+    '../../json_parser/dataset_large/PDPK1.json',
+];
 
 startPerformanceObserver();
 
