@@ -1,4 +1,4 @@
-export const startPerformanceObserver = function (reloads = 2000, delay = 1000) {
+export const startPerformanceObserver = function (reloads = 2010, delay = 1000) {
 
     window.addEventListener('load', () => {
 
@@ -68,7 +68,7 @@ export const startPerformanceObserver = function (reloads = 2000, delay = 1000) 
                 location.reload();
             } else {
                 console.log('Finished collecting measurements.');
-                console.log(measurements)
+                // console.log(measurements)
 
                 // have to re-parse data from local storage to account for last gathered measurement
                 measurements = JSON.parse(localStorage.getItem('measurements'));
