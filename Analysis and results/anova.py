@@ -1,3 +1,15 @@
+# This script was used in PyCharm together
+# with the packages pandas and statsmodels
+# 
+# To install the packages on your computer
+# seperately, you can do so here:
+# Pandas: https://pandas.pydata.org/
+# Statsmodels: https://github.com/statsmodels/statsmodels/
+# 
+# The script reads a sheet of excel an file and do
+# an ANOVA based on the columns PLT, Ramverk and Dataset
+#
+
 import pandas as pd
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
